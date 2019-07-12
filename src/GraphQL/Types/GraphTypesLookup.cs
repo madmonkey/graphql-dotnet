@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using GraphQL.Conversion;
 using GraphQL.Introspection;
 using GraphQL.Types.Relay;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GraphQL.Types
 {
@@ -27,6 +27,13 @@ namespace GraphQL.Types
             AddType<TimeSpanMillisecondsGraphType>();
             AddType<DecimalGraphType>();
             AddType<UriGraphType>();
+            AddType<GuidGraphType>();
+            AddType<ShortGraphType>();
+            AddType<UShortGraphType>();
+            AddType<UIntGraphType>();
+            AddType<ULongGraphType>();
+            AddType<ByteGraphType>();
+            AddType<SByteGraphType>();
 
             AddType<__Schema>();
             AddType<__Type>();
@@ -315,15 +322,10 @@ namespace GraphQL.Types
                 }
                 if (namedType.IsGenericType)
                 {
-                    var genericDefinition = namedType.GetGenericTypeDefinition();
-                    if (genericDefinition == typeof(EdgeType<>))
+                    if (namedType.ImplementsGenericType(typeof(EdgeType<>)) ||
+                        namedType.ImplementsGenericType(typeof(ConnectionType<,>)))
                     {
-                        AddType((IGraphType) Activator.CreateInstance(namedType), context);
-                        return;
-                    }
-                    if (genericDefinition == typeof(ConnectionType<>))
-                    {
-                        AddType((IGraphType) Activator.CreateInstance(namedType), context);
+                        AddType((IGraphType)Activator.CreateInstance(namedType), context);
                         return;
                     }
                 }

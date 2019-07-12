@@ -5,6 +5,8 @@ namespace GraphQL.Types
 {
     public class GuidGraphType : ScalarGraphType
     {
+        public GuidGraphType() => Name = "Guid";
+
         public override object ParseLiteral(IValue value)
         {
             if (value is GuidValue guidValue)
@@ -20,8 +22,7 @@ namespace GraphQL.Types
             return null;
         }
 
-        public override object ParseValue(object value) =>
-            ValueConverter.ConvertTo(value, typeof(Guid));
+        public override object ParseValue(object value) => ValueConverter.ConvertTo(value, typeof(Guid));
 
         public override object Serialize(object value) => ParseValue(value);
     }

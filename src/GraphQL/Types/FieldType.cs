@@ -1,7 +1,8 @@
+using GraphQL.Resolvers;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using GraphQL.Resolvers;
+using System.Diagnostics;
 
 namespace GraphQL.Types
 {
@@ -13,6 +14,7 @@ namespace GraphQL.Types
         QueryArguments Arguments { get; set; }
     }
 
+    [DebuggerDisplay("{Name,nq}")]
     public class FieldType : IFieldType
     {
         public string Name { get; set; }
@@ -27,22 +29,10 @@ namespace GraphQL.Types
 
         public TType GetMetadata<TType>(string key, TType defaultValue = default)
         {
-            if (!HasMetadata(key))
-            {
-                return defaultValue;
-            }
-
-            if (Metadata.TryGetValue(key, out var item))
-            {
-                return (TType) item;
-            }
-
-            return defaultValue;
+            var local = Metadata;
+            return local != null && local.TryGetValue(key, out var item) ? (TType)item : defaultValue;
         }
 
-        public bool HasMetadata(string key)
-        {
-            return Metadata?.ContainsKey(key) ?? false;
-        }
+        public bool HasMetadata(string key) => Metadata?.ContainsKey(key) ?? false;
     }
 }
